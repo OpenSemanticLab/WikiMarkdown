@@ -62,8 +62,8 @@ class WikiMarkdown {
 				$cleanUrl = Sanitizer::cleanUrl($url);
 				// Register link in the output object
 				$parser->getOutput()->addExternalLink($url);
-				// Create an external link
-				return Linker::makeExternalLink($cleanUrl, $text, true, $linkType, $parser->getExternalLinkAttribs($url), $parser->getTitle());
+				// Create an external link. Set $escape = false to allow img tags within links for image-links like badges
+				return Linker::makeExternalLink($cleanUrl, $text, false, $linkType, $parser->getExternalLinkAttribs($url), $parser->getTitle());
 			},
 			$out
 		);
