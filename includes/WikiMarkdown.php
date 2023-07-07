@@ -123,36 +123,40 @@ class WikiMarkdown {
 
 		// If Parsedown Extended is available with math turned on and the Math extension is loaded, then use it to perform math formatting
 		if ( $wgAllowMarkdownExtended && ( false !== self::getParsedown()->options['math'] ?? false ) && ExtensionRegistry::getInstance()->isLoaded( 'Math' ) ) {
+			$hookHandler = new \MediaWiki\Extension\Math\HookHandlers\ParserHooksHandler(
+				MediaWiki\MediaWikiServices::getInstance()->getService( 'Math.RendererFactory' ),
+				MediaWiki\MediaWikiServices::getInstance()->getService( 'UserOptionsLookup' )
+			);
 			$out = preg_replace_callback(
 				'/(?<!\\\\)\\\\\[(.*)(?<!\\\\)\\\\\]/isU',
-				function ( $matches ) use ( &$parser ) {
+				function ( $matches ) use ( &$parser, &$hookHandler ) {
 					$args = array('display' => 'block');
-					return MediaWiki\Extension\Math\Hooks::mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
+					return $hookHandler->mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
 				},
 				$out
 			);
 			$out = preg_replace_callback(
 				'/(?<!\\\\)\$\$(.*)(?<!\\\\)\$\$/isU',
-				function ( $matches ) use ( &$parser ) {
+				function ( $matches ) use ( &$parser, &$hookHandler ) {
 					$args = array('display' => 'block');
-					return MediaWiki\Extension\Math\Hooks::mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
+					return $hookHandler->mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
 				},
 				$out
 			);
 			$out = preg_replace_callback(
 				'/(?<!\\\\)\\\\\((.*)(?<!\\\\)\\\\\)/isU',
-				function ( $matches ) use ( &$parser ) {
+				function ( $matches ) use ( &$parser, &$hookHandler ) {
 					$args = array('display' => 'inline');
-					return MediaWiki\Extension\Math\Hooks::mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
+					return $hookHandler->mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
 				},
 				$out
 			);
 			if ( self::getParsedown()->options['math']['single_dollar'] ?? false ) {
 				$out = preg_replace_callback(
 					'/(?<!\\\\)\$(.*)(?<!\\\\)\$/isU',
-					function ( $matches ) use ( &$parser ) {
+					function ( $matches ) use ( &$parser, &$hookHandler ) {
 						$args = array('display' => 'inline');
-						return MediaWiki\Extension\Math\Hooks::mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
+						return $hookHandler->mathTagHook( html_entity_decode( $matches[1] ), $args, $parser );
 					},
 					$out
 				);
