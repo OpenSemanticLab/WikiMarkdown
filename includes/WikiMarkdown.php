@@ -83,7 +83,11 @@ class WikiMarkdown {
 				} else {
 					$refers[$anchor] = true;
 				}
-				return Linker::makeHeadline($matches[1], '>', $anchor, $matches[4], '');
+				$level = $matches[1];
+				$headline = $matches[4];
+				return "<h{$level}>" .
+					"<span class=\"mw-headline\" id=\"{$anchor}\">{$headline}</span>" .
+					"</h{$level}>";
 			},
 			$out
 		);
