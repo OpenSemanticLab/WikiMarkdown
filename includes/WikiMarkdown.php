@@ -129,7 +129,8 @@ class WikiMarkdown {
 		if ( $wgAllowMarkdownExtended && ( false !== self::getParsedown()->options['math'] ?? false ) && ExtensionRegistry::getInstance()->isLoaded( 'Math' ) ) {
 			$hookHandler = new \MediaWiki\Extension\Math\HookHandlers\ParserHooksHandler(
 				MediaWiki\MediaWikiServices::getInstance()->getService( 'Math.RendererFactory' ),
-				MediaWiki\MediaWikiServices::getInstance()->getService( 'UserOptionsLookup' )
+				MediaWiki\MediaWikiServices::getInstance()->getService( 'UserOptionsLookup' ),
+				MediaWiki\MediaWikiServices::getInstance()->getService( 'HookContainer' )
 			);
 			$out = preg_replace_callback(
 				'/(?<!\\\\)\\\\\[(.*)(?<!\\\\)\\\\\]/isU',
