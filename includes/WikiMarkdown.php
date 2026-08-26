@@ -127,9 +127,15 @@ class WikiMarkdown {
 
 		// If Parsedown Extended is available with math turned on and the Math extension is loaded, then use it to perform math formatting
 		if ( $wgAllowMarkdownExtended && ( false !== self::getParsedown()->options['math'] ?? false ) && ExtensionRegistry::getInstance()->isLoaded( 'Math' ) ) {
+			// Constructed by hand rather than through Math's own HookHandlers entry, so
+			// the argument list has to be kept in step with it. Math added a third
+			// parameter, HookContainer, which made this throw "Too few arguments".
+			// Services are the ones Math itself injects, see its extension.json.
+			$mathServices = MediaWiki\MediaWikiServices::getInstance();
 			$hookHandler = new \MediaWiki\Extension\Math\HookHandlers\ParserHooksHandler(
-				MediaWiki\MediaWikiServices::getInstance()->getService( 'Math.RendererFactory' ),
-				MediaWiki\MediaWikiServices::getInstance()->getService( 'UserOptionsLookup' )
+				$mathServices->getService( 'Math.RendererFactory' ),
+				$mathServices->getService( 'UserOptionsLookup' ),
+				$mathServices->getHookContainer()
 			);
 			$out = preg_replace_callback(
 				'/(?<!\\\\)\\\\\[(.*)(?<!\\\\)\\\\\]/isU',
